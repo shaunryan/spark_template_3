@@ -1,3 +1,5 @@
 target
 .metals
 .vscode
+.bloop
+DS_Store
