@@ -4,45 +4,46 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.DataFrame
 import org.apache.log4j.{LogManager, Logger}
+import scala.util.{Try,Success,Failure}
+import java.io.FileNotFoundException
+import java.io.IOException
 
-object DatabricksScalaTutorial extends App{
+object DatabricksScalaTutorial extends App with SparkSessionWrapper{
+
 
   val log:Logger = LogManager.getRootLogger()
 
   val local:Boolean = args(0).toBoolean
-  val file_path:String = args(1)
-  
-  log.warn(s"filpath:$file_path warn:${local.toString()}")
+  val inputFilePath:String = args(1)
+  val spark: SparkSession = getSparkSession(local)
 
-  val spark:SparkSession = getSparkSession(local)
-  val df:DataFrame = spark.read.json(file_path)
-  df.show()
+  log.info(s"filpath:$inputFilePath local:${local.toString()}")
 
-  def getSparkSession(local:Boolean):SparkSession = 
+  try 
   {
 
-    val spark:SparkSession = if (local)
-    {
-      val sparkConfig = new SparkConf()
-      sparkConfig.set("spark.broadcast.compress", "false")
-      sparkConfig.set("spark.shuffle.compress", "false")
-      sparkConfig.set("spark.shuffle.spill.compress", "false")
-      SparkSession
-        .builder()
-        .master("local[2]")
-        .appName("Demo")
-        .config(sparkConfig)
-        .getOrCreate()
-    }
-    else
-    {
-      SparkSession
-        .builder()
-        .appName("Demo")
-        .getOrCreate()
+    val df:DataFrame = Try(spark.read.json(inputFilePath)) 
+    match {
+
+      case Success(s) => s
+      case Failure(f) => {
+
+        log.error(s"failed to load JSON file from $inputFilePath")
+        throw new IOException(s"failed to load JSON file from $inputFilePath")
+
+      }
     }
 
-    spark
+    df.show()
+
+    val outputPath = s"${inputFilePath}/out"
+    df.write.parquet(outputPath)
+
+  }
+  finally
+  {
+
+    spark.stop()
 
   }
 
