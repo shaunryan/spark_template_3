@@ -8,14 +8,12 @@
         // configuration name visible for the user
         "name": "Launch Main",
         // full name of the class to run
-        "mainClass": "com.demo.DatabricksScalaTutorial",
+        "mainClass": "com.demo.Demo",
         // optional arguments for the main class
-        "args": [
-          "True",
-          "file:///Users/shaunryan/code/spark_template_3/sparkapp/data/"
-        ],
+        "args": [],
         // optional jvm properties to use
-        "jvmOptions": []
+        "jvmOptions": [],
+        "envFile": "${workspaceFolder}/.env"
       },
       // Test class configuration
     //   {

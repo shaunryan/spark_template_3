@@ -7,21 +7,22 @@ import org.apache.log4j.{LogManager, Logger}
 import scala.util.{Try,Success,Failure}
 import java.io.FileNotFoundException
 import java.io.IOException
+import com.demo.{Configuration => AppConfig}
+import org.apache.spark.sql.SaveMode
 
-object DatabricksScalaTutorial extends App with SparkSessionWrapper{
+object Demo extends App with SparkSessionWrapper{
 
 
   val log:Logger = LogManager.getRootLogger()
+  val inputFilePath:String = AppConfig.getDataRoot() + "example.json"
+  val spark: SparkSession = getSparkSession()
 
-  val local:Boolean = args(0).toBoolean
-  val inputFilePath:String = args(1)
-  val spark: SparkSession = getSparkSession(local)
-
-  log.info(s"filpath:$inputFilePath local:${local.toString()}")
+  log.warn(AppConfig.toString())
 
   try 
   {
 
+    log.warn(s"Loading file: $inputFilePath")
     val df:DataFrame = Try(spark.read.json(inputFilePath)) 
     match {
 
@@ -36,8 +37,8 @@ object DatabricksScalaTutorial extends App with SparkSessionWrapper{
 
     df.show()
 
-    val outputPath = s"${inputFilePath}/out"
-    df.write.parquet(outputPath)
+    val outputPath = s"${AppConfig.getDataRoot()}/out"
+    df.write.mode(SaveMode.Overwrite).parquet(outputPath)
 
   }
   finally

@@ -2,12 +2,13 @@ package com.demo
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
+import com.demo.{Configuration => AppConfig}
 
 trait SparkSessionWrapper {
 
-  val local:Boolean
+  val local:Boolean = AppConfig.isLocalEnvironment
 
-  def getSparkSession(local:Boolean):SparkSession = 
+  def getSparkSession():SparkSession = 
   {
 
     val spark:SparkSession = if (local)
