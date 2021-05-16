@@ -4,3 +4,6 @@ target
 .bloop
 DS_Store
 metals.sbt
+
+sparkapp/data/*
+sparkapp/data/out/*
