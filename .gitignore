@@ -5,5 +5,5 @@ target
 DS_Store
 metals.sbt
 
-sparkapp/data/*
+sparkapp/data/hudi_trips_cow/*
 sparkapp/data/out/*
