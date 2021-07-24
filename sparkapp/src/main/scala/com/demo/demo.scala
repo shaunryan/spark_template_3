@@ -12,26 +12,34 @@ import org.apache.spark.sql.SaveMode
 
 object Demo extends App with SparkSessionWrapper{
 
-
+  val fileType = ".csv"
   val log:Logger = LogManager.getRootLogger()
-  val inputFilePath:String = AppConfig.getDataRoot() + "example.json"
+  val inputFilePath:String = s"${AppConfig.getDataRoot()}example$fileType"
   val spark: SparkSession = getSparkSession()
 
   log.warn(AppConfig.toString())
 
+  val options = Map(
+    "header" -> "false",
+    "inferschema" -> "true",
+    "delimiter" -> ","
+  )
+
   try 
   {
 
-    log.warn(s"Loading file: $inputFilePath")
-    val df:DataFrame = Try(spark.read.json(inputFilePath)) 
-    match {
+    log.info(s"Loading file: $inputFilePath")
 
+    val df:DataFrame = Try(
+      spark.read
+        .options(options)
+        .csv(inputFilePath)
+    ) 
+    match {
       case Success(s) => s
       case Failure(f) => {
-
-        log.error(s"failed to load JSON file from $inputFilePath")
-        throw new IOException(s"failed to load JSON file from $inputFilePath")
-
+        log.error(s"failed to load ${fileType} file from $inputFilePath")
+        throw new IOException(s"failed to load ${fileType} file from $inputFilePath")
       }
     }
 
