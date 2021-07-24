@@ -4,6 +4,5 @@ target
 .bloop
 DS_Store
 metals.sbt
-
-sparkapp/data/hudi_trips_cow/*
-sparkapp/data/out/*
+data/hudi_trips_cow/*
+data/out/*
